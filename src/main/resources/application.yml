@@ -1,0 +1,67 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: order-service
+  profiles:
+    active: ${profile:dev}
+
+  sleuth:
+    sampler:
+      probability: 1.0
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:amigos_code}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_USERNAME:eureka}:${EUREKA_PASSWORD:password}@localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+
+# Resilience4j properties
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventory:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        sliding-window-type: count_based
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state:
+          5s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+
+# Resilience4j timeout properties
+  timelimiter:
+    instances:
+      inventory:
+        timeout-duration:
+          3s
+# Resilience4j retry properties
+  retry:
+    instances:
+      inventory:
+        max-attempts: 3
+        wait-duration: 5s
