@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/mongo-data
+/mysql_keycloak_data
+/postgres-inventory
+/postgres-order
 
 ### STS ###
 .apt_generated

@@ -7,6 +7,12 @@ spring:
   profiles:
     active: ${profile:dev}
 
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bootstrap-servers: localhost:9092
+
   sleuth:
     sampler:
       probability: 1.0
@@ -22,6 +28,8 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  cache:
+    type: caffeine
 
 eureka:
   client:

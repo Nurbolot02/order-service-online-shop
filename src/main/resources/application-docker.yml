@@ -1,0 +1,10 @@
+spring:
+  zipkin:
+    base-url: zipkin:9411
+  kafka:
+    producer:
+      bootstrap-servers: broker:29092
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_USERNAME:eureka}:${EUREKA_PASSWORD:password}@eureka:8761/eureka

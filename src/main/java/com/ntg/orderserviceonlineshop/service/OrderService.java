@@ -2,6 +2,7 @@ package com.ntg.orderserviceonlineshop.service;
 
 import com.ntg.orderserviceonlineshop.dto.InventoryResponseDTO;
 import com.ntg.orderserviceonlineshop.dto.OrderRequest;
+import com.ntg.orderserviceonlineshop.event.OrderPlacedEvent;
 import com.ntg.orderserviceonlineshop.exception.ItemNotFoundException;
 import com.ntg.orderserviceonlineshop.exception.NotEnoughCountException;
 import com.ntg.orderserviceonlineshop.model.Order;
@@ -10,6 +11,7 @@ import com.ntg.orderserviceonlineshop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -24,6 +26,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public String save(OrderRequest orderRequest) {
         Order order = modelMapper.map(orderRequest, Order.class);
@@ -68,6 +71,10 @@ public class OrderService {
         orderRepository.save(order);
         log.info("Order {} is saved", order.getOrderNumber());
         log.info("Order line items id {}", order.getOrderLineItems().get(0).getId());
+        kafkaTemplate.send("topic-1", OrderPlacedEvent.builder()
+                        .id(order.getId())
+                        .email("fdf")
+                .build());
         return "Order created";
     }
 
